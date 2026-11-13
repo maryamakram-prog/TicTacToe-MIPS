@@ -1,0 +1,606 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tic Tac Toe | MIPS Ultimate Edition</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    background:
+        radial-gradient(ellipse at top, #173b50 0%, transparent 55%),
+        #071321;
+    color: #f4f8fc;
+    font-family: "Segoe UI", Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 25px 15px;
+}
+
+.wrapper {
+    width: 100%;
+    max-width: 650px;
+    text-align: center;
+}
+
+.brand {
+    font-size: 13px;
+    letter-spacing: 5px;
+    color: #43dfc3;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+h1 {
+    font-size: clamp(38px, 8vw, 58px);
+    font-weight: 900;
+    letter-spacing: 3px;
+}
+
+h1 span {
+    color: #43dfc3;
+}
+
+.subtitle {
+    color: #94aabe;
+    margin-top: 8px;
+    font-size: 14px;
+}
+
+.panel {
+    margin-top: 30px;
+    background: rgba(16, 36, 55, 0.96);
+    border: 1px solid #29445b;
+    border-radius: 24px;
+    padding: 28px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.35);
+}
+
+.server {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 15px;
+    border-radius: 30px;
+    background: #102e35;
+    color: #43dfc3;
+    font-size: 12px;
+    margin-bottom: 22px;
+}
+
+.dot {
+    height: 8px;
+    width: 8px;
+    background: #43dfc3;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #43dfc3;
+}
+
+.modes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.mode-btn {
+    padding: 14px 8px;
+    background: #172f45;
+    color: #b8c8d8;
+    border: 1px solid #34516a;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.mode-btn:hover {
+    border-color: #43dfc3;
+}
+
+.mode-btn.active {
+    background: #123b3d;
+    color: #43dfc3;
+    border-color: #43dfc3;
+}
+
+.turn-label {
+    color: #9bb2c7;
+    font-size: 12px;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+}
+
+#status {
+    color: #43dfc3;
+    font-weight: 800;
+    font-size: 21px;
+    min-height: 30px;
+    margin-bottom: 22px;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    width: 100%;
+    max-width: 390px;
+    margin: auto;
+}
+
+.cell {
+    aspect-ratio: 1;
+    background: #172e45;
+    border: 1px solid #34516a;
+    border-radius: 17px;
+    color: white;
+    font-size: clamp(42px, 10vw, 68px);
+    font-weight: 900;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cell:not(:disabled):hover {
+    background: #20435a;
+    border-color: #43dfc3;
+    transform: translateY(-2px);
+}
+
+.cell.x {
+    color: #43dfc3;
+    text-shadow: 0 0 20px #43dfc355;
+}
+
+.cell.o {
+    color: #80aaff;
+    text-shadow: 0 0 20px #80aaff55;
+}
+
+.cell:disabled {
+    cursor: default;
+}
+
+.scores {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 28px 0;
+}
+
+.score-card {
+    background: #172e45;
+    border: 1px solid #29445b;
+    padding: 15px 5px;
+    border-radius: 13px;
+}
+
+.score-card p {
+    color: #9bb2c7;
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+.score-card strong {
+    font-size: 25px;
+}
+
+.score-card:nth-child(1) strong {
+    color: #43dfc3;
+}
+
+.score-card:nth-child(2) strong {
+    color: #80aaff;
+}
+
+.score-card:nth-child(3) strong {
+    color: #f3c66b;
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+}
+
+.action-btn {
+    flex: 1;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 12px;
+    border: 1px solid #34516a;
+    background: #172e45;
+    color: #dce8f2;
+}
+
+.action-btn.primary {
+    background: #43dfc3;
+    color: #071b26;
+    border-color: #43dfc3;
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+}
+
+.footer {
+    margin-top: 23px;
+    color: #718ba2;
+    font-size: 12px;
+    line-height: 1.8;
+}
+
+@media(max-width: 480px) {
+    .panel {
+        padding: 18px 14px;
+    }
+
+    .modes {
+        grid-template-columns: 1fr;
+    }
+
+    .board {
+        gap: 8px;
+    }
+
+    .cell {
+        border-radius: 12px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+    <div class="brand">ASSEMBLY GAMING PROJECT</div>
+
+    <h1>TIC <span>TAC</span> TOE</h1>
+
+    <p class="subtitle">
+        Ultimate MIPS Assembly Edition
+    </p>
+
+    <div class="panel">
+
+        <div class="server">
+            <span class="dot" id="serverDot"></span>
+            <span id="serverText">CONNECTING TO MIPS SERVER</span>
+        </div>
+
+        <div class="modes">
+            <button class="mode-btn active" id="pvp">
+                PLAYER vs PLAYER
+            </button>
+
+            <button class="mode-btn" id="pvc">
+                PLAYER vs COMPUTER
+            </button>
+        </div>
+
+        <p class="turn-label">CURRENT GAME STATUS</p>
+
+        <div id="status">Connecting...</div>
+
+        <div class="board" id="board"></div>
+
+        <div class="scores">
+
+            <div class="score-card">
+                <p>PLAYER X</p>
+                <strong id="sx">0</strong>
+            </div>
+
+            <div class="score-card">
+                <p>DRAWS</p>
+                <strong id="sd">0</strong>
+            </div>
+
+            <div class="score-card">
+                <p>PLAYER O</p>
+                <strong id="so">0</strong>
+            </div>
+
+        </div>
+
+        <div class="actions">
+            <button class="action-btn primary" id="new">
+                ↻ NEW GAME
+            </button>
+
+            <button class="action-btn" id="resetScores">
+                RESET SCORES
+            </button>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        POWERED BY PYTHON + FLASK + MARS MIPS SIMULATOR
+        <br>
+        Real MIPS Assembly Execution | Tic Tac Toe Project
+    </div>
+
+</div>
+
+<script>
+let mode = 1;
+let board = [];
+let busy = false;
+let done = false;
+
+let scores = {
+    X: 0,
+    O: 0,
+    Draw: 0
+};
+
+const $ = id => document.getElementById(id);
+
+
+// ==================================
+// API CONNECTION
+// ==================================
+
+async function api(url, data) {
+
+    const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+        throw new Error(result.error || "Server error");
+    }
+
+    return result;
+}
+
+
+// ==================================
+// SERVER STATUS
+// ==================================
+
+async function checkServer() {
+
+    try {
+
+        const response = await fetch("/api/state");
+        const data = await response.json();
+
+        if (!response.ok || !data.server ||
+            !data.simulator || !data.assembly) {
+            throw new Error("MIPS components unavailable");
+        }
+
+        $("serverText").textContent = "MIPS SERVER CONNECTED";
+        $("serverDot").style.background = "#43dfc3";
+        $("serverDot").style.boxShadow = "0 0 10px #43dfc3";
+
+    } catch (error) {
+
+        $("serverText").textContent = "SERVER CONNECTION ERROR";
+        $("serverDot").style.background = "#ff6464";
+        $("serverDot").style.boxShadow = "0 0 10px #ff6464";
+
+    }
+}
+
+
+// ==================================
+// DRAW BOARD
+// ==================================
+
+function draw() {
+
+    const root = $("board");
+    root.innerHTML = "";
+
+    board.forEach((value, index) => {
+
+        const button = document.createElement("button");
+
+        button.className = "cell";
+
+        if (value === "X") {
+            button.classList.add("x");
+        }
+
+        if (value === "O") {
+            button.classList.add("o");
+        }
+
+        button.textContent = value;
+
+        button.disabled =
+            busy ||
+            done ||
+            value === "X" ||
+            value === "O";
+
+        button.addEventListener("click", () => {
+            move(index + 1);
+        });
+
+        root.appendChild(button);
+
+    });
+
+}
+
+
+// ==================================
+// UPDATE SCOREBOARD
+// ==================================
+
+function updateScores() {
+
+    $("sx").textContent = scores.X;
+    $("so").textContent = scores.O;
+    $("sd").textContent = scores.Draw;
+
+}
+
+
+// ==================================
+// START GAME
+// ==================================
+
+async function start(selectedMode = mode) {
+
+    if (busy) return;
+
+    mode = selectedMode;
+
+    busy = true;
+    done = false;
+
+    $("pvp").classList.toggle("active", mode === 1);
+    $("pvc").classList.toggle("active", mode === 2);
+
+    $("status").textContent = "STARTING MIPS GAME...";
+
+    draw();
+
+    try {
+
+        const data = await api("/api/new", {
+            mode: mode
+        });
+
+        board = data.board;
+
+        if (mode === 1) {
+            $("status").textContent = "PLAYER X TURN";
+        } else {
+            $("status").textContent = "YOUR TURN - PLAYER X";
+        }
+
+    } catch (error) {
+
+        $("status").textContent = error.message;
+
+    }
+
+    busy = false;
+    draw();
+
+}
+
+
+// ==================================
+// PLAYER MOVE
+// ==================================
+
+async function move(cell) {
+
+    if (busy || done) return;
+
+    busy = true;
+    draw();
+
+    try {
+
+        const data = await api("/api/move", {
+            cell: cell
+        });
+
+        board = data.board;
+
+        if (data.winner) {
+
+            done = true;
+
+            scores[data.winner]++;
+
+            updateScores();
+
+            if (data.winner === "Draw") {
+                $("status").textContent = "IT'S A DRAW!";
+            } else {
+                $("status").textContent =
+                    "PLAYER " + data.winner + " WINS!";
+            }
+
+        } else {
+
+            if (mode === 2) {
+
+                $("status").textContent =
+                    "YOUR TURN - PLAYER X";
+
+            } else {
+
+                $("status").textContent =
+                    "PLAYER " + data.next_player + " TURN";
+
+            }
+
+        }
+
+    } catch (error) {
+
+        $("status").textContent = error.message;
+
+    }
+
+    busy = false;
+    draw();
+
+}
+
+
+// ==================================
+// BUTTON EVENTS
+// ==================================
+
+$("pvp").addEventListener("click", () => start(1));
+
+$("pvc").addEventListener("click", () => start(2));
+
+$("new").addEventListener("click", () => start(mode));
+
+$("resetScores").addEventListener("click", () => {
+
+    scores = {
+        X: 0,
+        O: 0,
+        Draw: 0
+    };
+
+    updateScores();
+
+});
+
+
+// ==================================
+// INITIALIZE
+// ==================================
+
+checkServer();
+start(1);
+
+</script>
+
+</body>
+</html>

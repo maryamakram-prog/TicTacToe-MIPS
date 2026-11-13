@@ -1,0 +1,7 @@
+Mips Assembler Rev 3.1.2
+C:\Program Files\MIPSym\asm\Assembler.exe
+-W
+C:\Users\NGCs\Desktop\TicTacToe-MIPS\tictactoe.asm
+
+C:\Users\NGCs\Desktop\TicTacToe-MIPS\tictactoe.asm: line 28 field 2 Syntax error at character 7 - expected: "
+C:\Users\NGCs\Desktop\TicTacToe-MIPS\tictactoe.asm: line 28 Error: failed to read file: 'C:\Users\NGCs\Desktop\TicTacToe-MIPS\tictactoe.asm'
